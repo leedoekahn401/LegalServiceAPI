@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
-public class UserDTO {
+public class UserFullInfoDTO implements UserInfoDTO {
     private UUID id;
     private String name;
     private String email;
@@ -17,11 +17,11 @@ public class UserDTO {
     private LocalDateTime updatedAt;
     private LocalDateTime lastAccessAt;
 
-    public static UserDTO fromEntity(User user) {
+    public static UserFullInfoDTO fromEntity(User user) {
         if (user == null) {
             return null;
         }
-        UserDTO dto = new UserDTO();
+        UserFullInfoDTO dto = new UserFullInfoDTO();
         dto.setId(user.getId());
         dto.setName(user.getName());
         dto.setEmail(user.getEmail());
@@ -32,4 +32,3 @@ public class UserDTO {
         return dto;
     }
 }
-

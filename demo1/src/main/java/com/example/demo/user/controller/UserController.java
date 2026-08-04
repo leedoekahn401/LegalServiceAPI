@@ -1,13 +1,17 @@
 package com.example.demo.user.controller;
 
-import com.example.demo.user.dto.UserDTO;
+import com.example.demo.security.UserDetailsImpl;
+import com.example.demo.user.dto.UserFullInfoDTO;
+import com.example.demo.user.dto.UserInfoDTO;
 import com.example.demo.user.service.UserService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.UUID;
 
@@ -23,8 +27,8 @@ public class UserController {
 
     @GetMapping("/all")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Page<UserDTO>> getAllUsers(Pageable pageable) {
-        Page<UserDTO> users = userService.getAllUsers(pageable);
+    public ResponseEntity<Page<UserFullInfoDTO>> getAllUsers(Pageable pageable) {
+        Page<UserFullInfoDTO> users = userService.getAllUsers(pageable);
         return ResponseEntity.ok(users);
     }
 
@@ -32,9 +36,18 @@ public class UserController {
      * Get information of the currently authenticated user.
      */
     @GetMapping("/me")
-    public ResponseEntity<UserDTO> getCurrentUser(Authentication authentication) {
-        UserDTO userDTO = userService.getUserInfo(authentication);
-        return ResponseEntity.ok(userDTO);
+    public ResponseEntity<UserInfoDTO> getCurrentUser(Authentication authentication) {
+        if (authentication == null || !authentication.isAuthenticated()) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not authenticated");
+        }
+
+        Object principal = authentication.getPrincipal();
+        if (principal instanceof UserDetailsImpl userDetails) {
+            UserInfoDTO userDTO = userService.getUserBasicInfo(userDetails.getUser());
+            return ResponseEntity.ok(userDTO);
+        }
+
+        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid authentication principal");
     }
 
     /**
@@ -42,8 +55,8 @@ public class UserController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserDTO> getUserById(@PathVariable UUID id) {
-        UserDTO userDTO = userService.getUserById(id);
+    public ResponseEntity<UserInfoDTO> getUserById(@PathVariable UUID id) {
+        UserInfoDTO userDTO = userService.getUserById(id);
         return ResponseEntity.ok(userDTO);
     }
 
@@ -52,8 +65,9 @@ public class UserController {
      */
     @GetMapping("/by-email")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<UserDTO> getUserByEmail(@RequestParam String email) {
-        UserDTO userDTO = userService.getUserByEmail(email);
+    public ResponseEntity<UserInfoDTO> getUserByEmail(@RequestParam String email) {
+        UserInfoDTO userDTO = userService.getUserByEmail(email);
         return ResponseEntity.ok(userDTO);
     }
 }
+
