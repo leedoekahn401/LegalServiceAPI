@@ -66,11 +66,11 @@ Extends `DefaultOAuth2UserService`:
 Extends `SimpleUrlAuthenticationSuccessHandler`:
 * Triggered automatically upon successful OAuth2 authentication.
 * Uses [JwtTokenHelper.java](file:///c:/Document/UltPrj/service_api/demo1/src/main/java/com/example/demo/security/JwtTokenHelper.java) to mint a JWT token.
-* Appends token as query parameter and redirects user to frontend client (e.g., `http://localhost:3000/oauth2/redirect?token=<JWT>`).
+* Sets the JWT in a secure, HttpOnly, SameSite cookie and redirects user to frontend client (e.g., `http://localhost:3000/oauth2/redirect`) without exposing the token in the URL.
 
 ### 7. [JwtAuthenticationFilter.java](file:///c:/Document/UltPrj/service_api/demo1/src/main/java/com/example/demo/auth/JwtAuthenticationFilter.java)
 HTTP filter extending `OncePerRequestFilter`:
-* Intercepts incoming requests to extract `Authorization` header (`Bearer <JWT>`).
+* Intercepts incoming requests to extract the JWT from the `Authorization` header (`Bearer <JWT>`) or the secure `token` HttpOnly cookie.
 * Validates token and extracts user ID.
 * Loads user entity using `CustomUserDetailsService.loadUserById(id)`.
 * Places `UsernamePasswordAuthenticationToken` inside Spring's `SecurityContextHolder` to authenticate the request lifecycle.
@@ -83,10 +83,10 @@ HTTP filter extending `OncePerRequestFilter`:
 1. **User Request**: User navigates to `/oauth2/authorization/google`.
 2. **Provider Authorization**: User authenticates with Google consent screen.
 3. **User Processing**: Google redirects code to backend. [OAuth2UserService.java](file:///c:/Document/UltPrj/service_api/demo1/src/main/java/com/example/demo/security/OAuth2UserService.java) executes to create/update local database user records.
-4. **JWT Handshake**: [OAuth2AuthenticationSuccessHandler.java](file:///c:/Document/UltPrj/service_api/demo1/src/main/java/com/example/demo/security/OAuth2AuthenticationSuccessHandler.java) generates JWT and redirects to frontend endpoint with token.
+4. **JWT Handshake**: [OAuth2AuthenticationSuccessHandler.java](file:///c:/Document/UltPrj/service_api/demo1/src/main/java/com/example/demo/security/OAuth2AuthenticationSuccessHandler.java) generates JWT, sets it as a secure HttpOnly cookie, and redirects to frontend endpoint.
 
 ### Flow 2: Authenticated API Requests
-1. **Request Header**: Frontend attaches `Authorization: Bearer <JWT>` header to API requests.
+1. **Request Header**: Frontend either attaches `Authorization: Bearer <JWT>` header, or the browser automatically includes the secure HttpOnly `token` cookie with API requests.
 2. **Filter Interception**: [JwtAuthenticationFilter.java](file:///c:/Document/UltPrj/service_api/demo1/src/main/java/com/example/demo/auth/JwtAuthenticationFilter.java) validates signature & expiry via [JwtTokenHelper.java](file:///c:/Document/UltPrj/service_api/demo1/src/main/java/com/example/demo/security/JwtTokenHelper.java).
 3. **Security Context Creation**: Loads `UserDetails` from database and populates `SecurityContextHolder`.
 4. **Endpoint Access**: Spring Security allows access to protected REST endpoints based on roles and authentication status.
