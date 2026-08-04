@@ -17,10 +17,10 @@ public class JwtTokenHelper {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenHelper.class);
 
-    @Value("${app.jwtSecret}")
+    @Value("${app.jwtSecret:Vi_biet_dau_som_mai_thuc_day_Em_khong_con_day_om_anh_nhe_hon_anh}")
     private String jwtSecret;
 
-    @Value("${app.jwtExpirationMs}")
+    @Value("${app.jwtExpirationMs:86400000}")
     private int jwtExpirationMs; // Default to 24h
 
     public SecretKey getSigningKey() {
