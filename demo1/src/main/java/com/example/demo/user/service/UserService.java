@@ -24,11 +24,11 @@ public class UserService {
     }
 
     @Transactional // write operation need transaction
-    public User createUser(OAuth2User oAuth2User) {
+    public UserBasicInfoDTO createUser(OAuth2User oAuth2User) {
         User user = new User();
         user.setName(oAuth2User.getAttribute("name"));
         user.setEmail(oAuth2User.getAttribute("email"));
-        return userRepo.save(user);
+        return UserBasicInfoDTO.fromEntity(userRepo.save(user));
     }
 
     @Transactional(readOnly = true)
@@ -56,5 +56,5 @@ public class UserService {
     public UserBasicInfoDTO getUserBasicInfo(User user) {
         return UserBasicInfoDTO.fromEntity(user);
     }
-}
 
+}
