@@ -16,6 +16,7 @@ import org.hibernate.type.SqlTypes;
 import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.UUID;
+import com.example.demo.message.stratergy.MessageMetadata;
 
 @Entity
 @Table(name = "messages")
@@ -42,7 +43,7 @@ public class Message {
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "metadata", columnDefinition = "jsonb")
-    private Map<String, Object> metadata;
+    private MessageMetadata metadata;
 
     @Setter(AccessLevel.NONE)
     @Column(name = "created_at", updatable = false)

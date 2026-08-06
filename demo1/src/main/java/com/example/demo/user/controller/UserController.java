@@ -8,8 +8,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.*;
+
 import java.util.UUID;
 
 @RestController
@@ -22,6 +23,12 @@ public class UserController {
         this.userService = userService;
     }
 
+    /**
+     * Retrieves a paginated list of all users. Accessible by ADMIN role only.
+     *
+     * @param pageable pagination parameters (page, size, sort)
+     * @return paginated list of user full info DTOs
+     */
     @GetMapping("/all")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Page<UserFullInfoDTO>> getAllUsers(Pageable pageable) {
@@ -30,7 +37,10 @@ public class UserController {
     }
 
     /**
-     * Get information of the currently authenticated user.
+     * Retrieves basic information of the currently authenticated user.
+     *
+     * @param userDetails authenticated user details
+     * @return user info DTO of the current user
      */
     @GetMapping("/me")
     public ResponseEntity<UserInfoDTO> getCurrentUser(@AuthenticationPrincipal UserDetailsImpl userDetails) {
@@ -39,7 +49,10 @@ public class UserController {
     }
 
     /**
-     * Get user information by user ID.
+     * Retrieves user information by user ID. Accessible by ADMIN role only.
+     *
+     * @param id the user UUID
+     * @return user info DTO
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
@@ -49,7 +62,10 @@ public class UserController {
     }
 
     /**
-     * Get user information by email address.
+     * Retrieves user information by email address. Accessible by ADMIN role only.
+     *
+     * @param email the email address of the user
+     * @return user info DTO
      */
     @GetMapping("/by-email")
     @PreAuthorize("hasRole('ADMIN')")

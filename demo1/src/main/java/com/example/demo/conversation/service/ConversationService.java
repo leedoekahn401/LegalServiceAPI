@@ -63,4 +63,12 @@ public class ConversationService {
         conversationRepo.save(conversation);
     }
 
+    @Transactional
+    public void renameConversation(UUID conversationId, String newTitle, UUID userId) {
+        Conversation conversation = conversationRepo.findByIdAndUserIdAndDeletedAtIsNull(conversationId, userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conversation not found"));
+        conversation.setTitle(newTitle);
+        conversationRepo.save(conversation);
+    }
+
 }
