@@ -1,11 +1,9 @@
 package com.example.demo.message.stratergy;
 
-import java.util.Collections;
 import java.util.UUID;
 
-import org.springframework.stereotype.Component;
+import com.example.demo.message.dto.MessageResponseDTO;
 
-@Component
 public class MockChatStratergy implements ChatStratergy {
 
     @Override
@@ -13,10 +11,10 @@ public class MockChatStratergy implements ChatStratergy {
         MessageMetadata metaData = new MessageMetadata();
         metaData.setModelUsed("mocked");
         metaData.setTotalTokens(0);
-        metaData.setCitations(Collections.emptyList());
+        metaData.setCitations(null);
 
         ChatResult chatResult = new ChatResult();
-        chatResult.setAnswer("Mock AI response to: " + message);
+        chatResult.setAnswer("mocked response");
         chatResult.setMessageMetadata(metaData);
 
         return chatResult;
@@ -24,8 +22,8 @@ public class MockChatStratergy implements ChatStratergy {
 
     @Override
     public String getChatType() {
+        // TODO Auto-generated method stub
         return "MOCK";
     }
 
 }
-

@@ -64,10 +64,10 @@ public class ConversationService {
     }
 
     @Transactional
-    public void renameConversation(UUID conversationId, String newTitle, UUID userId) {
+    public void renameConversation(String title, UUID conversationId, UUID userId) {
         Conversation conversation = conversationRepo.findByIdAndUserIdAndDeletedAtIsNull(conversationId, userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conversation not found"));
-        conversation.setTitle(newTitle);
+        conversation.setTitle(title);
         conversationRepo.save(conversation);
     }
 
